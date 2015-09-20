@@ -6,6 +6,7 @@ import fr.mmyumu.androidgameframework.Game;
 import fr.mmyumu.androidgameframework.Graphics;
 import fr.mmyumu.androidgameframework.Screen;
 import fr.mmyumu.androidgameframework.Input.TouchEvent;
+import fr.mmyumu.vnergame.overworld.OverworldScreen;
 
 public class MainMenuScreen extends Screen {
     public MainMenuScreen(Game game) {
@@ -23,7 +24,7 @@ public class MainMenuScreen extends Screen {
             if (event.type == TouchEvent.TOUCH_UP) {
 
                 if (inBounds(event, 50, 350, 250, 450)) {
-                    game.setScreen(new GameScreen(game));
+                    game.setScreen(new OverworldScreen(game));
                 }
 
             }
