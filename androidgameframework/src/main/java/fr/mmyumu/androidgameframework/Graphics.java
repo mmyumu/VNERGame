@@ -15,6 +15,8 @@ public interface Graphics {
 
     void drawRect(int x, int y, int width, int height, int color);
 
+    void drawRect(Rect rect, int color);
+
     void drawImage(Image image, int x, int y, int srcX, int srcY,
                    int srcWidth, int srcHeight);
 

@@ -12,6 +12,7 @@ import fr.mmyumu.androidgameframework.Graphics;
 import fr.mmyumu.androidgameframework.Image;
 import fr.mmyumu.androidgameframework.Input.TouchEvent;
 import fr.mmyumu.androidgameframework.Screen;
+import fr.mmyumu.vnergame.mainmenu.MainMenuScreen;
 
 public class GameScreen extends Screen {
 	enum GameState {
@@ -256,15 +257,6 @@ public class GameScreen extends Screen {
 		if (robot.getCenterY() > 500) {
 			state = GameState.GameOver;
 		}
-	}
-
-	private boolean inBounds(TouchEvent event, int x, int y, int width,
-			int height) {
-		if (event.x > x && event.x < x + width - 1 && event.y > y
-				&& event.y < y + height - 1)
-			return true;
-		else
-			return false;
 	}
 
 	private void updatePaused(List<TouchEvent> touchEvents) {

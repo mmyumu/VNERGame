@@ -50,8 +50,8 @@ public class OverworldScreen extends Screen {
         // This is identical to the update() method from our Unit 2/3 game.
 
         // 1. All touch input is handled here:
-//        int len = touchEvents.size();
-//        for (int i = 0; i < len; i++) {
+        int len = touchEvents.size();
+        for (int i = 0; i < len; i++) {
 //            TouchEvent event = touchEvents.get(i);
 //            if (event.type == TouchEvent.TOUCH_DOWN) {
 //
@@ -142,7 +142,7 @@ public class OverworldScreen extends Screen {
 //
 //        if (robot.getCenterY() > 500) {
 //            state = GameState.GameOver;
-//        }
+        }
     }
 
     private void updatePaused(List<TouchEvent> touchEvents) {
