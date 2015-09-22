@@ -14,7 +14,6 @@ public class Assets {
     public static Music theme;
     
     public static void load(AndroidGame androidGame) {
-        // TODO Auto-generated method stub
         theme = androidGame.getAudio().createMusic("menutheme.mp3");
         theme.setLooping(true);
         theme.setVolume(0.85f);

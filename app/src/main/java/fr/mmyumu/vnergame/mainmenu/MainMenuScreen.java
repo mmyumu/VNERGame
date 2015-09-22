@@ -1,7 +1,5 @@
 package fr.mmyumu.vnergame.mainmenu;
 
-import android.graphics.Color;
-
 import java.util.List;
 
 import fr.mmyumu.androidgameframework.Game;
@@ -9,7 +7,6 @@ import fr.mmyumu.androidgameframework.Graphics;
 import fr.mmyumu.androidgameframework.Screen;
 import fr.mmyumu.androidgameframework.Input.TouchEvent;
 import fr.mmyumu.vnergame.Assets;
-import fr.mmyumu.vnergame.GameScreen;
 import fr.mmyumu.vnergame.overworld.OverworldScreen;
 
 public class MainMenuScreen extends Screen {
@@ -30,7 +27,7 @@ public class MainMenuScreen extends Screen {
             if (event.type == TouchEvent.TOUCH_UP) {
 
                 if (inBounds(event, Shapes.start)) {
-                    game.setScreen(new GameScreen(game));
+                    game.setScreen(new OverworldScreen(game));
                 }
             }
         }
@@ -41,7 +38,7 @@ public class MainMenuScreen extends Screen {
         Graphics g = game.getGraphics();
         g.drawImage(Assets.menu, 0, 0);
 
-        g.drawRect(Shapes.start, Color.CYAN);
+//        g.drawRect(Shapes.start, Color.CYAN);
     }
 
     @Override

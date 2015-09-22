@@ -8,7 +8,7 @@ import fr.mmyumu.vnergame.mainmenu.MainMenuScreen;
 
 public class LoadingScreen extends Screen {
     public LoadingScreen(Game game) {
-        
+
         super(game);
     }
 
@@ -23,7 +23,7 @@ public class LoadingScreen extends Screen {
         Assets.characterJump = g.newImage("jumped.png", ImageFormat.ARGB4444);
         Assets.characterDown = g.newImage("down.png", ImageFormat.ARGB4444);
 
-        
+
         Assets.heliboy = g.newImage("heliboy.png", ImageFormat.ARGB4444);
         Assets.heliboy2 = g.newImage("heliboy2.png", ImageFormat.ARGB4444);
         Assets.heliboy3  = g.newImage("heliboy3.png", ImageFormat.ARGB4444);
@@ -31,19 +31,19 @@ public class LoadingScreen extends Screen {
         Assets.heliboy5  = g.newImage("heliboy5.png", ImageFormat.ARGB4444);
 
 
-        
+
         Assets.tiledirt = g.newImage("tiledirt.png", ImageFormat.RGB565);
         Assets.tilegrassTop = g.newImage("tilegrasstop.png", ImageFormat.RGB565);
         Assets.tilegrassBot = g.newImage("tilegrassbot.png", ImageFormat.RGB565);
         Assets.tilegrassLeft = g.newImage("tilegrassleft.png", ImageFormat.RGB565);
         Assets.tilegrassRight = g.newImage("tilegrassright.png", ImageFormat.RGB565);
-        
+
         Assets.button = g.newImage("button.jpg", ImageFormat.RGB565);
 
         //This is how you would load a sound if you had one.
         //Assets.click = game.getAudio().createSound("explode.ogg");
 
-        
+
         game.setScreen(new MainMenuScreen(game));
 
     }
