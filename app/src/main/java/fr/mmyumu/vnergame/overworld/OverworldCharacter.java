@@ -1,214 +1,255 @@
 package fr.mmyumu.vnergame.overworld;
 
+import android.graphics.Point;
 import android.graphics.Rect;
 
 import java.util.ArrayList;
-
-import fr.mmyumu.vnergame.Background;
+import java.util.List;
 
 public class OverworldCharacter {
+    private static final int MOVESPEED = 20;
 
-    // Constants are Here
-    final int JUMPSPEED = -15;
-    final int MOVESPEED = 5;
+    private int centerX;
+    private int centerY;
+    private int speedX;
+    private int speedY;
 
-    private int centerX = 100;
-    private int centerY = 377;
-    private boolean jumped = false;
-    private boolean movingLeft = false;
-    private boolean movingRight = false;
-    private boolean ducked = false;
-    private boolean readyToFire = true;
+    private Point moveTarget;
+    private Rect hitBox;
+    private List<Direction> directions;
 
-    private int speedX = 0;
-    private int speedY = 0;
-    public static Rect rect = new Rect(0, 0, 0, 0);
-    public static Rect rect2 = new Rect(0, 0, 0, 0);
-    public static Rect rect3 = new Rect(0, 0, 0, 0);
-    public static Rect rect4 = new Rect(0, 0, 0, 0);
-    public static Rect yellowRed = new Rect(0, 0, 0, 0);
-    
-    public static Rect footleft = new Rect(0,0,0,0);
-    public static Rect footright = new Rect(0,0,0,0);
-    
-    
-    private Background bg1 = OverworldScreen.getBg1();
-    private Background bg2 = OverworldScreen.getBg2();
 
-    private ArrayList<OverworldProjectile> projectiles = new ArrayList<OverworldProjectile>();
+    public OverworldCharacter(int centerX, int centerY) {
+        this.centerX = centerX;
+        this.centerY = centerY;
+
+        this.speedX = 0;
+        this.speedY = 0;
+
+        this.moveTarget = null;
+        this.hitBox = initHitBox();
+        this.directions = new ArrayList<>();
+    }
+//    private Background bg1 = OverworldScreen.getBg1();
+//    private Background bg2 = OverworldScreen.getBg2();
 
     public void update() {
         // Moves Character or Scrolls Background accordingly.
 
-        if (speedX < 0) {
-            centerX += speedX;
-        }
-        if (speedX == 0 || speedX < 0) {
-            bg1.setSpeedX(0);
-            bg2.setSpeedX(0);
+        if(moveTarget != null) {
+            if (isRightClick(moveTarget.x)) {
+                moveRight();
+            } else if (isLeftClick(moveTarget.x)) {
+                moveLeft();
+            }
 
+            if (isUpClick(moveTarget.y)) {
+                moveUp();
+            } else if (isDownClick(moveTarget.y)) {
+                moveDown();
+            }
         }
-        if (centerX <= 200 && speedX > 0) {
-            centerX += speedX;
-        }
-        if (speedX > 0 && centerX > 200) {
-            bg1.setSpeedX(-MOVESPEED / 5);
-            bg2.setSpeedX(-MOVESPEED / 5);
-        }
+
+
+//        if (speedX < 0) {
+//            centerX += speedX;
+//        }
+//        if (speedX == 0 || speedX < 0) {
+//            bg1.setSpeedX(0);
+//            bg2.setSpeedX(0);
+//
+//        }
+//        if (centerX <= 200 && speedX > 0) {
+//            centerX += speedX;
+//        }
+//        if (speedX > 0 && centerX > 200) {
+//            bg1.setSpeedX(-MOVESPEED / 5);
+//            bg2.setSpeedX(-MOVESPEED / 5);
+//        }
 
         // Updates Y Position
+        centerX += speedX;
         centerY += speedY;
 
-        // Handles Jumping
-
-            speedY += 1;
-
-        if (speedY > 3){
-            jumped = true;
-        }
 
         // Prevents going beyond X coordinate of 0
-        if (centerX + speedX <= 60) {
-            centerX = 61;
-        }
+//        if (centerX + speedX <= 60) {
+//            centerX = 61;
+//        }
 
-        rect.set(centerX - 34, centerY - 63, centerX + 34, centerY);
-        rect2.set(rect.left, rect.top + 63, rect.left+68, rect.top + 128);
-        rect3.set(rect.left - 26, rect.top+32, rect.left, rect.top+52);
-        rect4.set(rect.left + 68, rect.top+32, rect.left+94, rect.top+52);
-        yellowRed.set(centerX - 110, centerY - 110, centerX + 70, centerY + 70);
-        footleft.set(centerX - 50, centerY + 20, centerX, centerY + 35);
-        footright.set(centerX, centerY + 20, centerX+50, centerY+35);
+        hitBox = initHitBox();
+
+//        rect.set(centerX - 34, centerY - 63, centerX + 34, centerY);
+//        rect2.set(rect.left, rect.top + 63, rect.left + 68, rect.top + 128);
+//        rect3.set(rect.left - 26, rect.top + 32, rect.left, rect.top + 52);
+//        rect4.set(rect.left + 68, rect.top + 32, rect.left + 94, rect.top + 52);
+//        yellowRed.set(centerX - 110, centerY - 110, centerX + 70, centerY + 70);
+//        footleft.set(centerX - 50, centerY + 20, centerX, centerY + 35);
+//        footright.set(centerX, centerY + 20, centerX + 50, centerY + 35);
 
 
+    }
+
+    private Rect initHitBox() {
+        return new Rect(centerX - (OverworldConstants.TILE_WIDTH / 2), centerY - (OverworldConstants.TILE_HEIGHT / 2), centerX + (OverworldConstants.TILE_WIDTH / 2), centerY + (OverworldConstants.TILE_HEIGHT / 2));
     }
 
     public void moveRight() {
-        if (ducked == false) {
-            speedX = MOVESPEED;
-        }
+        speedX = MOVESPEED;
+        directions.add(Direction.EAST);
+        directions.remove(Direction.WEST);
     }
 
     public void moveLeft() {
-        if (ducked == false) {
-            speedX = -MOVESPEED;
-        }
+        speedX = -MOVESPEED;
+        directions.add(Direction.WEST);
+        directions.remove(Direction.EAST);
     }
 
-    public void stopRight() {
-        setMovingRight(false);
-        stop();
+    public void moveUp() {
+        speedY = -MOVESPEED;
+        directions.add(Direction.NORTH);
+        directions.remove(Direction.SOUTH);
     }
 
-    public void stopLeft() {
-        setMovingLeft(false);
-        stop();
+    public void moveDown() {
+        speedY = MOVESPEED;
+        directions.add(Direction.SOUTH);
+        directions.remove(Direction.NORTH);
     }
 
     private void stop() {
-        if (isMovingRight() == false && isMovingLeft() == false) {
+        if (!isMovingRight() && !isMovingLeft()) {
             speedX = 0;
         }
 
-        if (isMovingRight() == false && isMovingLeft() == true) {
+        if (!isMovingRight() && isMovingLeft()) {
             moveLeft();
         }
 
-        if (isMovingRight() == true && isMovingLeft() == false) {
+        if (isMovingRight() && !isMovingLeft()) {
             moveRight();
         }
-
     }
 
-    public void jump() {
-        if (jumped == false) {
-            speedY = JUMPSPEED;
-            jumped = true;
-        }
-
+    private boolean isMovingLeft() {
+        return directions.contains(Direction.WEST);
     }
 
-    public void shoot() {
-        if (readyToFire) {
-            OverworldProjectile p = new OverworldProjectile(centerX + 50, centerY - 25);
-            projectiles.add(p);
-        }
+    private boolean isMovingRight() {
+        return directions.contains(Direction.EAST);
     }
 
     public int getCenterX() {
         return centerX;
     }
 
-    public int getCenterY() {
-        return centerY;
-    }
-
-    public boolean isJumped() {
-        return jumped;
-    }
-
-    public int getSpeedX() {
-        return speedX;
-    }
-
-    public int getSpeedY() {
-        return speedY;
-    }
-
     public void setCenterX(int centerX) {
         this.centerX = centerX;
+    }
+
+    public int getCenterY() {
+        return centerY;
     }
 
     public void setCenterY(int centerY) {
         this.centerY = centerY;
     }
 
-    public void setJumped(boolean jumped) {
-        this.jumped = jumped;
+    public int getSpeedX() {
+        return speedX;
     }
 
     public void setSpeedX(int speedX) {
         this.speedX = speedX;
     }
 
+    public int getSpeedY() {
+        return speedY;
+    }
+
     public void setSpeedY(int speedY) {
         this.speedY = speedY;
     }
 
-    public boolean isDucked() {
-        return ducked;
+    public List<Direction> getDirections() {
+        return directions;
     }
 
-    public void setDucked(boolean ducked) {
-        this.ducked = ducked;
+    public void collide(OverworldTile tile) {
+        moveStop();
     }
 
-    public boolean isMovingRight() {
-        return movingRight;
+    public Rect getHitBox() {
+        return hitBox;
     }
 
-    public void setMovingRight(boolean movingRight) {
-        this.movingRight = movingRight;
+    public void collideLeft(Rect rect) {
+        speedX = 0;
+        centerX += hitBox.left - rect.right;
+
     }
 
-    public boolean isMovingLeft() {
-        return movingLeft;
+    public void collideRight(Rect rect) {
+        speedX = 0;
+        centerX -= rect.left - hitBox.right;
+//        centerX -= OverworldConstants.TILE_WIDTH / 2;
     }
 
-    public void setMovingLeft(boolean movingLeft) {
-        this.movingLeft = movingLeft;
+    public void collideUp(Rect rect) {
+        speedY = 0;
+        centerY += rect.bottom - hitBox.top;
+//        centerY += OverworldConstants.TILE_HEIGHT / 2;
     }
 
-    public ArrayList getProjectiles() {
-        return projectiles;
+    public void collideDown(Rect rect) {
+        speedY = 0;
+        centerY -= hitBox.bottom - rect.top;
+//        centerY -= OverworldConstants.TILE_HEIGHT / 2;
     }
 
-    public boolean isReadyToFire() {
-        return readyToFire;
+    public void moveStop() {
+        speedX = 0;
+        speedY = 0;
+        directions.clear();
     }
 
-    public void setReadyToFire(boolean readyToFire) {
-        this.readyToFire = readyToFire;
+//    public void move() {
+//        if (isRightClick(event.x)) {
+//            mainCharacter.moveRight();
+//        } else if (isLeftClick(event.x)) {
+//            mainCharacter.moveLeft();
+//        }
+//
+//        if (isUpClick(event.y)) {
+//            mainCharacter.moveUp();
+//        } else if (isDownClick(event.y)) {
+//            mainCharacter.moveDown();
+//        }
+//    }
+
+    private boolean isRightClick(int x) {
+        return x > centerX + MOVESPEED;// + OverworldConstants.TILE_WIDTH / 2;
+    }
+
+    private boolean isLeftClick(int x) {
+        return x < centerX - MOVESPEED;// - OverworldConstants.TILE_WIDTH / 2;
+    }
+
+    private boolean isUpClick(int y) {
+        return y < centerY - MOVESPEED;// - OverworldConstants.TILE_HEIGHT / 2;
+    }
+
+    private boolean isDownClick(int y) {
+        return y > centerY + MOVESPEED;// + OverworldConstants.TILE_HEIGHT / 2;
+    }
+
+    public void setMoveTarget(Point moveTarget) {
+        this.moveTarget = moveTarget;
+    }
+
+    enum Direction {
+        NORTH, SOUTH, EAST, WEST;
     }
 
 }

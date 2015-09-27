@@ -23,7 +23,7 @@ public class SampleGame extends AndroidGame {
             firstTimeCreate = false;
         }
 
-        InputStream is = getResources().openRawResource(R.raw.map1);
+        InputStream is = getResources().openRawResource(R.raw.village);
         map = convertStreamToString(is);
 
         return new SplashLoadingScreen(this);

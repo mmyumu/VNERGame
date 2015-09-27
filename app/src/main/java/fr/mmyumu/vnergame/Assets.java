@@ -7,8 +7,13 @@ import fr.mmyumu.androidgameframework.impl.AndroidGame;
 
 public class Assets {
     
-    public static Image menu, splash, background, character, character2, character3, heliboy, heliboy2, heliboy3, heliboy4, heliboy5;
-    public static Image tiledirt, tilegrassTop, tilegrassBot, tilegrassLeft, tilegrassRight, characterJump, characterDown;
+    public static Image menu;
+    public static Image splash;
+    public static Image background;
+    public static Image character;
+    public static Image tiledirt;
+    public static Image tilegrass;
+    public static Image tilewall;
     public static Image button;
     public static Sound click;
     public static Music theme;

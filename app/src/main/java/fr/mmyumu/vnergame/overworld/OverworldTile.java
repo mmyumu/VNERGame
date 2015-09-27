@@ -4,58 +4,37 @@ import android.graphics.Rect;
 
 import fr.mmyumu.androidgameframework.Image;
 import fr.mmyumu.vnergame.Assets;
-import fr.mmyumu.vnergame.Background;
 
 public class OverworldTile {
 
-    private int tileX, tileY, speedX;
-    public int type;
-    public Image tileImage;
+    private Type type;
+    private int tileX;
+    private int tileY;
+    private int speedX;
+    private OverworldCharacter mainCharacter;
+    //    private Background bg = OverworldScreen.getBg1();
+    private Rect rect;
 
-    private OverworldCharacter mainCharacter = OverworldScreen.getMainCharacter();
-    private Background bg = OverworldScreen.getBg1();
+    public OverworldTile(OverworldCharacter mainCharacter, int x, int y, char typeChar) {
+        this.mainCharacter = mainCharacter;
+        this.tileX = x * OverworldConstants.TILE_WIDTH;
+        this.tileY = y * OverworldConstants.TILE_HEIGHT;
+        this.type = Type.getType(typeChar);
 
-    private Rect r;
-
-    public OverworldTile(int x, int y, int typeInt) {
-        tileX = x * 40;
-        tileY = y * 40;
-
-        type = typeInt;
-
-        r = new Rect();
-
-        if (type == 5) {
-            tileImage = Assets.tiledirt;
-        } else if (type == 8) {
-            tileImage = Assets.tilegrassTop;
-        } else if (type == 4) {
-            tileImage = Assets.tilegrassLeft;
-
-        } else if (type == 6) {
-            tileImage = Assets.tilegrassRight;
-
-        } else if (type == 2) {
-            tileImage = Assets.tilegrassBot;
-        } else {
-            type = 0;
+        if (this.type == null) {
+            throw new OverworldException("The type " + typeChar + " is not a registered Overworld tile.");
         }
 
+        rect = new Rect();
     }
 
-        public void update() {
-            speedX = bg.getSpeedX() * 5;
-            tileX += speedX;
-            r.set(tileX, tileY, tileX+40, tileY+40);
-    
-            
-            
-            if (Rect.intersects(r, OverworldCharacter.yellowRed) && type != 0) {
-                checkVerticalCollision(OverworldCharacter.rect, OverworldCharacter.rect2);
-                checkSideCollision(OverworldCharacter.rect3, OverworldCharacter.rect4, OverworldCharacter.footleft, OverworldCharacter.footright);
-            }
-    
-        }
+    public void update() {
+//        speedX = 5;
+//        tileX += speedX;
+        rect.set(tileX, tileY, tileX + OverworldConstants.TILE_WIDTH, tileY + OverworldConstants.TILE_HEIGHT);
+
+        checkCollision();
+    }
 
     public int getTileX() {
         return tileX;
@@ -73,49 +52,78 @@ public class OverworldTile {
         this.tileY = tileY;
     }
 
-    public Image getTileImage() {
-        return tileImage;
+    public Type getType() {
+        return type;
     }
 
-    public void setTileImage(Image tileImage) {
-        this.tileImage = tileImage;
+    public void checkCollision() {
+        if (type == Type.WALL) {
+
+            if (mainCharacter.getHitBox().intersect(rect)) {
+//                checkLeftCollision();
+//                checkRightCollision();
+//                checkUpCollision();
+//                checkDownCollision();
+                mainCharacter.collide(this);
+            }
+//            if (Rect.intersects(hitBox, rect)) {
+//                mainCharacter.collide();
+//
+//                mainCharacter.getDirections().contains(OverworldCharacter.Direction.NORTH);
+//                mainCharacter.setCenterX(tileX + OverworldConstants.TILE_HEIGHT / 2);
+//                mainCharacter.setSpeedX(0);
+//            }
+        }
     }
 
-    public void checkVerticalCollision(Rect rtop, Rect rbot) {
-        if (Rect.intersects(rtop, r)) {
-            
+    private void checkLeftCollision() {
+        if (mainCharacter.getHitBox().left < rect.right) {
+            mainCharacter.collideLeft(rect);
+        }
+    }
+
+    private void checkRightCollision() {
+        if (mainCharacter.getHitBox().right < rect.left) {
+            mainCharacter.collideRight(rect);
+        }
+    }
+
+    private void checkUpCollision() {
+        if (mainCharacter.getHitBox().top < rect.bottom) {
+            mainCharacter.collideUp(rect);
+        }
+    }
+
+    private void checkDownCollision() {
+        if (mainCharacter.getHitBox().bottom < rect.top) {
+            mainCharacter.collideDown(rect);
+        }
+    }
+
+
+    public enum Type {
+        // TODO: add a collision attribute to the tiles?
+        NONE(' ', null), DIRT('D', Assets.tiledirt), GRASS('G', Assets.tilegrass), WALL('W', Assets.tilewall);
+
+        private char typeChar;
+        private Image image;
+
+        Type(char typeChar, Image image) {
+            this.typeChar = typeChar;
+            this.image = image;
         }
 
-        if (Rect.intersects(rbot, r) && type == 8) {
-            mainCharacter.setJumped(false);
-            mainCharacter.setSpeedY(0);
-            mainCharacter.setCenterY(tileY - 63);
+        public static Type getType(char typeChar) {
+            for (Type type : Type.values()) {
+                if (type.typeChar == typeChar) {
+                    return type;
+                }
+            }
+            return null;
         }
-    }
 
-    public void checkSideCollision(Rect rleft, Rect rright, Rect leftfoot, Rect rightfoot) {
-        if (type != 5 && type != 2 && type != 0){
-            if (Rect.intersects(rleft, r)) {
-                mainCharacter.setCenterX(tileX + 102);
-    
-                mainCharacter.setSpeedX(0);
-    
-            }else if (Rect.intersects(leftfoot, r)) {
-                
-                mainCharacter.setCenterX(tileX + 85);
-                mainCharacter.setSpeedX(0);
-            }
-            
-            if (Rect.intersects(rright, r)) {
-                mainCharacter.setCenterX(tileX - 62);
-    
-                mainCharacter.setSpeedX(0);
-            }
-            
-            else if (Rect.intersects(rightfoot, r)) {
-                mainCharacter.setCenterX(tileX - 45);
-                mainCharacter.setSpeedX(0);
-            }
+        public Image getImage() {
+            return image;
         }
     }
 

@@ -48,11 +48,11 @@ public abstract class AndroidGame extends Activity implements Game {
         Log.d("SIZES", "### width=" + width);
         Log.d("SIZES", "### height=" + height);
 
-        final int convertedWidth = (int)TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, width, getResources().getDisplayMetrics());
-        final int convertedHeight = (int)TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, height, getResources().getDisplayMetrics());
-
-        Log.d("SIZES", "### convertedWidth=" + convertedWidth);
-        Log.d("SIZES", "### convertedHeight=" + convertedHeight);
+//        final int convertedWidth = (int)TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, width, getResources().getDisplayMetrics());
+//        final int convertedHeight = (int)TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, height, getResources().getDisplayMetrics());
+//
+//        Log.d("SIZES", "### convertedWidth=" + convertedWidth);
+//        Log.d("SIZES", "### convertedHeight=" + convertedHeight);
 
         boolean isPortrait = getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT;
         int frameBufferWidth = isPortrait ? 2134 : 2733;
