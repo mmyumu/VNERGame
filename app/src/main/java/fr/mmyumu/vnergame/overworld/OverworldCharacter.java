@@ -3,9 +3,6 @@ package fr.mmyumu.vnergame.overworld;
 import android.graphics.Point;
 import android.graphics.Rect;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class OverworldCharacter {
     private static final int MOVESPEED = 20;
 
@@ -16,8 +13,6 @@ public class OverworldCharacter {
 
     private Point moveTarget;
     private Rect hitBox;
-    private List<Direction> directions;
-
 
     public OverworldCharacter(int centerX, int centerY) {
         this.centerX = centerX;
@@ -28,7 +23,6 @@ public class OverworldCharacter {
 
         this.moveTarget = null;
         this.hitBox = initHitBox();
-        this.directions = new ArrayList<>();
     }
 //    private Background bg1 = OverworldScreen.getBg1();
 //    private Background bg2 = OverworldScreen.getBg2();
@@ -36,18 +30,25 @@ public class OverworldCharacter {
     public void update() {
         // Moves Character or Scrolls Background accordingly.
 
-        if(moveTarget != null) {
+        if (moveTarget != null) {
+            System.out.println("##### moveTarget x=" + moveTarget.x + " y=" + moveTarget.y);
             if (isRightClick(moveTarget.x)) {
+                System.out.println("##### RIGHT !");
                 moveRight();
             } else if (isLeftClick(moveTarget.x)) {
+                System.out.println("##### LEFT !");
                 moveLeft();
             }
 
             if (isUpClick(moveTarget.y)) {
+                System.out.println("##### UP !");
                 moveUp();
             } else if (isDownClick(moveTarget.y)) {
+                System.out.println("##### DOWN !");
                 moveDown();
             }
+
+
         }
 
 
@@ -68,6 +69,7 @@ public class OverworldCharacter {
 //        }
 
         // Updates Y Position
+        System.out.println("##### speedX=" + speedX + " speedY=" + speedY);
         centerX += speedX;
         centerY += speedY;
 
@@ -96,48 +98,18 @@ public class OverworldCharacter {
 
     public void moveRight() {
         speedX = MOVESPEED;
-        directions.add(Direction.EAST);
-        directions.remove(Direction.WEST);
     }
 
     public void moveLeft() {
         speedX = -MOVESPEED;
-        directions.add(Direction.WEST);
-        directions.remove(Direction.EAST);
     }
 
     public void moveUp() {
         speedY = -MOVESPEED;
-        directions.add(Direction.NORTH);
-        directions.remove(Direction.SOUTH);
     }
 
     public void moveDown() {
         speedY = MOVESPEED;
-        directions.add(Direction.SOUTH);
-        directions.remove(Direction.NORTH);
-    }
-
-    private void stop() {
-        if (!isMovingRight() && !isMovingLeft()) {
-            speedX = 0;
-        }
-
-        if (!isMovingRight() && isMovingLeft()) {
-            moveLeft();
-        }
-
-        if (isMovingRight() && !isMovingLeft()) {
-            moveRight();
-        }
-    }
-
-    private boolean isMovingLeft() {
-        return directions.contains(Direction.WEST);
-    }
-
-    private boolean isMovingRight() {
-        return directions.contains(Direction.EAST);
     }
 
     public int getCenterX() {
@@ -172,10 +144,6 @@ public class OverworldCharacter {
         this.speedY = speedY;
     }
 
-    public List<Direction> getDirections() {
-        return directions;
-    }
-
     public void collide(OverworldTile tile) {
         moveStop();
     }
@@ -186,32 +154,30 @@ public class OverworldCharacter {
 
     public void collideLeft(Rect rect) {
         speedX = 0;
-        centerX += hitBox.left - rect.right;
-
+//        centerX += hitBox.left - rect.right;
     }
 
     public void collideRight(Rect rect) {
         speedX = 0;
-        centerX -= rect.left - hitBox.right;
+//        centerX -= rect.left - hitBox.right;
 //        centerX -= OverworldConstants.TILE_WIDTH / 2;
     }
 
     public void collideUp(Rect rect) {
         speedY = 0;
-        centerY += rect.bottom - hitBox.top;
+//        centerY += rect.bottom - hitBox.top;
 //        centerY += OverworldConstants.TILE_HEIGHT / 2;
     }
 
     public void collideDown(Rect rect) {
         speedY = 0;
-        centerY -= hitBox.bottom - rect.top;
+//        centerY -= hitBox.bottom - rect.top;
 //        centerY -= OverworldConstants.TILE_HEIGHT / 2;
     }
 
     public void moveStop() {
         speedX = 0;
         speedY = 0;
-        directions.clear();
     }
 
 //    public void move() {
@@ -229,27 +195,26 @@ public class OverworldCharacter {
 //    }
 
     private boolean isRightClick(int x) {
+        System.out.println("##### OverworldCharacter.isRightClick x=" + x + " centerX=" + centerX + " MOVESPEED=" + MOVESPEED + " centerX+MOVESPEED=" + (centerX + MOVESPEED));
         return x > centerX + MOVESPEED;// + OverworldConstants.TILE_WIDTH / 2;
     }
 
     private boolean isLeftClick(int x) {
+        System.out.println("##### OverworldCharacter.isLeftClick x=" + x + " centerX=" + centerX + " MOVESPEED=" + MOVESPEED + " centerX-MOVESPEED=" + (centerX - MOVESPEED));
         return x < centerX - MOVESPEED;// - OverworldConstants.TILE_WIDTH / 2;
     }
 
     private boolean isUpClick(int y) {
+        System.out.println("##### OverworldCharacter.isUpClick y=" + y + " centerY=" + centerY + " MOVESPEED=" + MOVESPEED + " centerY-MOVESPEED=" + (centerY - MOVESPEED));
         return y < centerY - MOVESPEED;// - OverworldConstants.TILE_HEIGHT / 2;
     }
 
     private boolean isDownClick(int y) {
+        System.out.println("##### OverworldCharacter.isDownClick y=" + y + " centerY=" + centerY + " MOVESPEED=" + MOVESPEED + " centerY+MOVESPEED=" + (centerY + MOVESPEED));
         return y > centerY + MOVESPEED;// + OverworldConstants.TILE_HEIGHT / 2;
     }
 
     public void setMoveTarget(Point moveTarget) {
         this.moveTarget = moveTarget;
     }
-
-    enum Direction {
-        NORTH, SOUTH, EAST, WEST;
-    }
-
 }

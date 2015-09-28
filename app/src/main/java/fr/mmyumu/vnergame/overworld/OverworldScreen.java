@@ -137,8 +137,10 @@ public class OverworldScreen extends Screen {
     }
 
     private void updateRunning(List<TouchEvent> touchEvents, float deltaTime) {
-
+        System.out.println("##### OverworldScreen.updateRunning deltaTime=" + deltaTime);
         // This is identical to the update() method from our Unit 2/3 game.
+
+        mainCharacter.moveStop();
 
         // 1. All touch input is handled here:
         int len = touchEvents.size();
@@ -146,7 +148,7 @@ public class OverworldScreen extends Screen {
             TouchEvent event = touchEvents.get(i);
             if (event.type == TouchEvent.TOUCH_DOWN || event.type == TouchEvent.TOUCH_DRAGGED) {
                 mainCharacter.setMoveTarget(new Point(event.x, event.y));
-                mainCharacter.moveStop();
+
 //                mainCharacter.move();
 //                if (inBounds(event, 0, 285, 65, 65)) {
 //                    mainCharacter.jump();
@@ -167,7 +169,6 @@ public class OverworldScreen extends Screen {
 //                }
             } else if (event.type == TouchEvent.TOUCH_UP) {
                 mainCharacter.setMoveTarget(null);
-                mainCharacter.moveStop();
             }
         }
 
@@ -223,12 +224,9 @@ public class OverworldScreen extends Screen {
     }
 
     private void updateTiles() {
-
-        for (int i = 0; i < tiles.size(); i++) {
-            OverworldTile t = tiles.get(i);
-            t.update();
+        for (OverworldTile tile : tiles) {
+            tile.update();
         }
-
     }
 
     @Override
@@ -240,29 +238,31 @@ public class OverworldScreen extends Screen {
         paintTiles(g);
 
         // First draw the game elements.
-        g.drawImage(character, mainCharacter.getCenterX() - 60, mainCharacter.getCenterY() - 60);
+        g.drawImage(character, mainCharacter.getCenterX() - (OverworldConstants.TILE_WIDTH / 2), mainCharacter.getCenterY() - (OverworldConstants.TILE_HEIGHT / 2));
 
         // Example:
         // g.drawImage(Assets.background, 0, 0);
         // g.drawImage(Assets.character, characterX, characterY);
 
         // Secondly, draw the UI above the game elements.
-        if (state == GameState.Ready)
+        if (state == GameState.Ready) {
             drawReadyUI();
-        if (state == GameState.Running)
+        }
+        if (state == GameState.Running) {
             drawRunningUI();
-        if (state == GameState.Paused)
+        }
+        if (state == GameState.Paused) {
             drawPausedUI();
-        if (state == GameState.GameOver)
+        }
+        if (state == GameState.GameOver) {
             drawGameOverUI();
-
+        }
     }
 
     private void paintTiles(Graphics g) {
-        for (int i = 0; i < tiles.size(); i++) {
-            OverworldTile t = tiles.get(i);
-            if (t.getType() != OverworldTile.Type.NONE) {
-                g.drawImage(t.getType().getImage(), t.getTileX(), t.getTileY());
+        for (OverworldTile tile : tiles) {
+            if (tile.getType() != OverworldTile.Type.NONE) {
+                g.drawImage(tile.getType().getImage(), tile.getTileX(), tile.getTileY());
             }
         }
     }
@@ -349,5 +349,4 @@ public class OverworldScreen extends Screen {
     enum GameState {
         Ready, Running, Paused, GameOver
     }
-
 }
