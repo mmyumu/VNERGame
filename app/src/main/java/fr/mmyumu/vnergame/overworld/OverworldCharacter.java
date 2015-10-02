@@ -8,8 +8,8 @@ public class OverworldCharacter {
 
     private int centerX;
     private int centerY;
-    private int speedX;
-    private int speedY;
+    private double speedX;
+    private double speedY;
 
     private Point moveTarget;
     private Rect hitBox;
@@ -31,65 +31,65 @@ public class OverworldCharacter {
         // Moves Character or Scrolls Background accordingly.
 
         if (moveTarget != null) {
+//            System.out.println("##### moveTarget x=" + moveTarget.x + " y=" + moveTarget.y);
+//            if (isRightClick(moveTarget.x)) {
+//                System.out.println("##### RIGHT !");
+//                moveRight();
+//            } else if (isLeftClick(moveTarget.x)) {
+//                System.out.println("##### LEFT !");
+//                moveLeft();
+//            }
+//
+//            if (isUpClick(moveTarget.y)) {
+//                System.out.println("##### UP !");
+//                moveUp();
+//            } else if (isDownClick(moveTarget.y)) {
+//                System.out.println("##### DOWN !");
+//                moveDown();
+//            }
+
+            System.out.println("##### centerX=" + centerX + " centerY=" + centerY);
             System.out.println("##### moveTarget x=" + moveTarget.x + " y=" + moveTarget.y);
-            if (isRightClick(moveTarget.x)) {
-                System.out.println("##### RIGHT !");
-                moveRight();
-            } else if (isLeftClick(moveTarget.x)) {
-                System.out.println("##### LEFT !");
-                moveLeft();
+            System.out.println("##### (moveTarget.y - centerY)=" + (moveTarget.y - centerY));
+            System.out.println("##### (moveTarget.x - centerX)=" + (moveTarget.x - centerX));
+
+            int xDistance = moveTarget.x - centerX;
+            int yDistance = moveTarget.y - centerY;
+
+            if (!isCloserThanMaxMovement(xDistance, yDistance)) {
+                if (moveTarget.x == centerX) {
+                    speedX = 0;
+                    speedY = MOVESPEED;
+                } else if (moveTarget.y == centerY) {
+                    speedX = MOVESPEED;
+                    speedY = 0;
+                } else {
+
+                    double slope = yDistance / (double) xDistance;
+                    System.out.println("##### slope=" + slope);
+                    speedX = MOVESPEED / Math.sqrt(slope * slope + 1);
+                    speedY = Math.sqrt(MOVESPEED * MOVESPEED - speedX * speedX);
+                }
+
+                if (moveTarget.x < centerX) {
+                    speedX = -speedX;
+                }
+
+                if (moveTarget.y < centerY) {
+                    speedY = -speedY;
+                }
+
+                System.out.println("##### speedX=" + speedX + " speedY=" + speedY);
+                centerX += speedX;
+                centerY += speedY;
             }
-
-            if (isUpClick(moveTarget.y)) {
-                System.out.println("##### UP !");
-                moveUp();
-            } else if (isDownClick(moveTarget.y)) {
-                System.out.println("##### DOWN !");
-                moveDown();
-            }
-
-
         }
 
-
-//        if (speedX < 0) {
-//            centerX += speedX;
-//        }
-//        if (speedX == 0 || speedX < 0) {
-//            bg1.setSpeedX(0);
-//            bg2.setSpeedX(0);
-//
-//        }
-//        if (centerX <= 200 && speedX > 0) {
-//            centerX += speedX;
-//        }
-//        if (speedX > 0 && centerX > 200) {
-//            bg1.setSpeedX(-MOVESPEED / 5);
-//            bg2.setSpeedX(-MOVESPEED / 5);
-//        }
-
-        // Updates Y Position
-        System.out.println("##### speedX=" + speedX + " speedY=" + speedY);
-        centerX += speedX;
-        centerY += speedY;
-
-
-        // Prevents going beyond X coordinate of 0
-//        if (centerX + speedX <= 60) {
-//            centerX = 61;
-//        }
-
         hitBox = initHitBox();
+    }
 
-//        rect.set(centerX - 34, centerY - 63, centerX + 34, centerY);
-//        rect2.set(rect.left, rect.top + 63, rect.left + 68, rect.top + 128);
-//        rect3.set(rect.left - 26, rect.top + 32, rect.left, rect.top + 52);
-//        rect4.set(rect.left + 68, rect.top + 32, rect.left + 94, rect.top + 52);
-//        yellowRed.set(centerX - 110, centerY - 110, centerX + 70, centerY + 70);
-//        footleft.set(centerX - 50, centerY + 20, centerX, centerY + 35);
-//        footright.set(centerX, centerY + 20, centerX + 50, centerY + 35);
-
-
+    private boolean isCloserThanMaxMovement(int xDistance, int yDistance) {
+        return Math.sqrt((xDistance * xDistance) + (yDistance * yDistance)) < MOVESPEED;
     }
 
     private Rect initHitBox() {
@@ -128,16 +128,8 @@ public class OverworldCharacter {
         this.centerY = centerY;
     }
 
-    public int getSpeedX() {
-        return speedX;
-    }
-
     public void setSpeedX(int speedX) {
         this.speedX = speedX;
-    }
-
-    public int getSpeedY() {
-        return speedY;
     }
 
     public void setSpeedY(int speedY) {
