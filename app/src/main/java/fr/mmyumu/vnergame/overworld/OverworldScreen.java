@@ -34,7 +34,7 @@ public class OverworldScreen extends Screen {
         Double centerX = OverworldConstants.TILE_WIDTH * 1.5;
         Double centerY = OverworldConstants.TILE_HEIGHT * 1.5;
 
-        mainCharacter = new OverworldCharacter(centerX.intValue(), centerY.intValue());
+        mainCharacter = new OverworldCharacter(new Point(centerX.intValue(), centerY.intValue()));
 
         character = Assets.character;
 
@@ -140,53 +140,105 @@ public class OverworldScreen extends Screen {
         System.out.println("##### OverworldScreen.updateRunning deltaTime=" + deltaTime);
         // This is identical to the update() method from our Unit 2/3 game.
 
-        mainCharacter.moveStop();
-
         // 1. All touch input is handled here:
         int len = touchEvents.size();
         for (int i = 0; i < len; i++) {
             TouchEvent event = touchEvents.get(i);
             if (event.type == TouchEvent.TOUCH_DOWN || event.type == TouchEvent.TOUCH_DRAGGED) {
                 mainCharacter.setMoveTarget(new Point(event.x, event.y));
-
-//                mainCharacter.move();
-//                if (inBounds(event, 0, 285, 65, 65)) {
-//                    mainCharacter.jump();
-//                    currentSprite = anim.getImage();
-//                    mainCharacter.setDucked(false);
-//                } else if (inBounds(event, 0, 350, 65, 65)) {
-//
-//                    if (mainCharacter.isDucked() == false && mainCharacter.isJumped() == false
-//                            && mainCharacter.isReadyToFire()) {
-//                        mainCharacter.shoot();
-//                    }
-//                } else if (inBounds(event, 0, 415, 65, 65)
-//                        && mainCharacter.isJumped() == false) {
-//                    currentSprite = Assets.characterDown;
-//                    mainCharacter.setDucked(true);
-//                    mainCharacter.setSpeedX(0);
-//
-//                }
             } else if (event.type == TouchEvent.TOUCH_UP) {
                 mainCharacter.setMoveTarget(null);
             }
         }
-
-        // 2. Check miscellaneous events like death:
-
-//        if (livesLeft == 0) {
-//            state = GameState.GameOver;
-//        }
-
-        // 3. Call individual update() methods here.
-        // This is where all the game updates happen.
-        // For example, mainCharacter.update();
-        mainCharacter.update();
-
-        updateTiles();
-//        bg1.update();
-//        bg2.update();
+        moveMainCharacter();
         animate();
+    }
+
+    private void moveMainCharacter() {
+        mainCharacter.computeMovement();
+        mainCharacter.applyHorizontalMovement();
+        checkHorizontalCollision();
+        mainCharacter.applyVerticalMovement();
+        checkVerticalCollision();
+    }
+
+    private void checkHorizontalCollision() {
+        mainCharacter.getCenter().x += computeHorizontalCollision();
+    }
+
+    private void checkVerticalCollision() {
+        mainCharacter.getCenter().y += computeVerticalCollision();
+    }
+
+    private int computeHorizontalCollision() {
+        if(mainCharacter.getSpeed().getX() < 0) {
+            return computeLeftCollision();
+        } else if(mainCharacter.getSpeed().getX() > 0) {
+            return -computeRightCollision();
+        }
+
+        return 0;
+    }
+
+    private int computeVerticalCollision() {
+        if(mainCharacter.getSpeed().getY() < 0) {
+            return computeTopCollision();
+        } else if(mainCharacter.getSpeed().getX() > 0) {
+            return -computeBottomCollision();
+        }
+        return 0;
+    }
+
+    private int computeLeftCollision() {
+        int maxCollisionDistance = 0;
+        for(OverworldTile tile : tiles) {
+            if(tile.getType() == OverworldTile.Type.WALL) {
+                int collisionDistance = mainCharacter.computeCollisionFromLeft(tile.getRect());
+                if(collisionDistance > maxCollisionDistance) {
+                    maxCollisionDistance = collisionDistance;
+                }
+            }
+        }
+        return maxCollisionDistance;
+    }
+
+    private int computeRightCollision() {
+        int maxCollisionDistance = 0;
+        for(OverworldTile tile : tiles) {
+            if(tile.getType() == OverworldTile.Type.WALL) {
+                int collisionDistance = mainCharacter.computeCollisionFromRight(tile.getRect());
+                if(collisionDistance > maxCollisionDistance) {
+                    maxCollisionDistance = collisionDistance;
+                }
+            }
+        }
+        return maxCollisionDistance;
+    }
+
+    private int computeTopCollision() {
+        int maxCollisionDistance = 0;
+        for(OverworldTile tile : tiles) {
+            if(tile.getType() == OverworldTile.Type.WALL) {
+                int collisionDistance = mainCharacter.computeCollisionFromTop(tile.getRect());
+                if(collisionDistance > maxCollisionDistance) {
+                    maxCollisionDistance = collisionDistance;
+                }
+            }
+        }
+        return maxCollisionDistance;
+    }
+
+    private int computeBottomCollision() {
+        int maxCollisionDistance = 0;
+        for(OverworldTile tile : tiles) {
+            if(tile.getType() == OverworldTile.Type.WALL) {
+                int collisionDistance = mainCharacter.computeCollisionFromBottom(tile.getRect());
+                if(collisionDistance > maxCollisionDistance) {
+                    maxCollisionDistance = collisionDistance;
+                }
+            }
+        }
+        return maxCollisionDistance;
     }
 
     private void updatePaused(List<TouchEvent> touchEvents) {
@@ -238,7 +290,7 @@ public class OverworldScreen extends Screen {
         paintTiles(g);
 
         // First draw the game elements.
-        g.drawImage(character, mainCharacter.getCenterX() - (OverworldConstants.TILE_WIDTH / 2), mainCharacter.getCenterY() - (OverworldConstants.TILE_HEIGHT / 2));
+        g.drawImage(character, mainCharacter.getCenter().x - (OverworldConstants.TILE_WIDTH / 2), mainCharacter.getCenter().y - (OverworldConstants.TILE_HEIGHT / 2));
 
         // Example:
         // g.drawImage(Assets.background, 0, 0);

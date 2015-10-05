@@ -1,12 +1,13 @@
 package fr.mmyumu.vnergame.overworld;
 
 import android.graphics.Rect;
+import android.util.Log;
 
 import fr.mmyumu.androidgameframework.Image;
 import fr.mmyumu.vnergame.Assets;
 
 public class OverworldTile {
-
+    private static final String TAG = "OverworldTile";
     private Type type;
     private int tileX;
     private int tileY;
@@ -25,81 +26,34 @@ public class OverworldTile {
             throw new OverworldException("The type " + typeChar + " is not a registered Overworld tile.");
         }
 
-        rect = new Rect();
+        rect = new Rect(tileX, tileY, tileX + OverworldConstants.TILE_WIDTH, tileY + OverworldConstants.TILE_HEIGHT);
+    }
+
+    public Rect getRect() {
+        return rect;
+    }
+
+    public void setRect(Rect rect) {
+        this.rect = rect;
     }
 
     public void update() {
-//        speedX = 5;
-//        tileX += speedX;
-        rect.set(tileX, tileY, tileX + OverworldConstants.TILE_WIDTH, tileY + OverworldConstants.TILE_HEIGHT);
-
-        checkCollision();
+        if(type == Type.WALL) {
+//            checkCollision();
+        }
     }
 
     public int getTileX() {
         return tileX;
     }
 
-    public void setTileX(int tileX) {
-        this.tileX = tileX;
-    }
-
     public int getTileY() {
         return tileY;
-    }
-
-    public void setTileY(int tileY) {
-        this.tileY = tileY;
     }
 
     public Type getType() {
         return type;
     }
-
-    public void checkCollision() {
-        if (type == Type.WALL) {
-
-            if (mainCharacter.getHitBox().intersect(rect)) {
-//                checkLeftCollision();
-//                checkRightCollision();
-//                checkUpCollision();
-//                checkDownCollision();
-                mainCharacter.collide(this);
-            }
-//            if (Rect.intersects(hitBox, rect)) {
-//                mainCharacter.collide();
-//
-//                mainCharacter.getDirections().contains(OverworldCharacter.Direction.NORTH);
-//                mainCharacter.setCenterX(tileX + OverworldConstants.TILE_HEIGHT / 2);
-//                mainCharacter.setSpeedX(0);
-//            }
-        }
-    }
-
-    private void checkLeftCollision() {
-        if (mainCharacter.getHitBox().left < rect.right) {
-            mainCharacter.collideLeft(rect);
-        }
-    }
-
-    private void checkRightCollision() {
-        if (mainCharacter.getHitBox().right < rect.left) {
-            mainCharacter.collideRight(rect);
-        }
-    }
-
-    private void checkUpCollision() {
-        if (mainCharacter.getHitBox().top < rect.bottom) {
-            mainCharacter.collideUp(rect);
-        }
-    }
-
-    private void checkDownCollision() {
-        if (mainCharacter.getHitBox().bottom < rect.top) {
-            mainCharacter.collideDown(rect);
-        }
-    }
-
 
     public enum Type {
         // TODO: add a collision attribute to the tiles?

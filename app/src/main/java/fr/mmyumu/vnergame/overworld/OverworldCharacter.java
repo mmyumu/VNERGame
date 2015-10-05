@@ -2,211 +2,189 @@ package fr.mmyumu.vnergame.overworld;
 
 import android.graphics.Point;
 import android.graphics.Rect;
+import android.util.Log;
+
+import fr.mmyumu.vnergame.common.Speed;
 
 public class OverworldCharacter {
+    private static final String TAG = "OverworldCharacter";
     private static final int MOVESPEED = 20;
-
-    private int centerX;
-    private int centerY;
-    private double speedX;
-    private double speedY;
-
+    private Point oldCenter;
+    private Point center;
     private Point moveTarget;
+    private Rect oldHitBox;
     private Rect hitBox;
+    private Speed speed;
 
-    public OverworldCharacter(int centerX, int centerY) {
-        this.centerX = centerX;
-        this.centerY = centerY;
-
-        this.speedX = 0;
-        this.speedY = 0;
+    public OverworldCharacter(Point center) {
+        this.center = center;
 
         this.moveTarget = null;
-        this.hitBox = initHitBox();
+        this.hitBox = initHitBox(center);
     }
-//    private Background bg1 = OverworldScreen.getBg1();
+
+    //    private Background bg1 = OverworldScreen.getBg1();
 //    private Background bg2 = OverworldScreen.getBg2();
 
-    public void update() {
-        // Moves Character or Scrolls Background accordingly.
-
-        if (moveTarget != null) {
-//            System.out.println("##### moveTarget x=" + moveTarget.x + " y=" + moveTarget.y);
-//            if (isRightClick(moveTarget.x)) {
-//                System.out.println("##### RIGHT !");
-//                moveRight();
-//            } else if (isLeftClick(moveTarget.x)) {
-//                System.out.println("##### LEFT !");
-//                moveLeft();
-//            }
-//
-//            if (isUpClick(moveTarget.y)) {
-//                System.out.println("##### UP !");
-//                moveUp();
-//            } else if (isDownClick(moveTarget.y)) {
-//                System.out.println("##### DOWN !");
-//                moveDown();
-//            }
-
-            System.out.println("##### centerX=" + centerX + " centerY=" + centerY);
-            System.out.println("##### moveTarget x=" + moveTarget.x + " y=" + moveTarget.y);
-            System.out.println("##### (moveTarget.y - centerY)=" + (moveTarget.y - centerY));
-            System.out.println("##### (moveTarget.x - centerX)=" + (moveTarget.x - centerX));
-
-            int xDistance = moveTarget.x - centerX;
-            int yDistance = moveTarget.y - centerY;
-
-            if (!isCloserThanMaxMovement(xDistance, yDistance)) {
-                if (moveTarget.x == centerX) {
-                    speedX = 0;
-                    speedY = MOVESPEED;
-                } else if (moveTarget.y == centerY) {
-                    speedX = MOVESPEED;
-                    speedY = 0;
-                } else {
-
-                    double slope = yDistance / (double) xDistance;
-                    System.out.println("##### slope=" + slope);
-                    speedX = MOVESPEED / Math.sqrt(slope * slope + 1);
-                    speedY = Math.sqrt(MOVESPEED * MOVESPEED - speedX * speedX);
-                }
-
-                if (moveTarget.x < centerX) {
-                    speedX = -speedX;
-                }
-
-                if (moveTarget.y < centerY) {
-                    speedY = -speedY;
-                }
-
-                System.out.println("##### speedX=" + speedX + " speedY=" + speedY);
-                centerX += speedX;
-                centerY += speedY;
-            }
-        }
-
-        hitBox = initHitBox();
+    public Point getCenter() {
+        return center;
     }
 
-    private boolean isCloserThanMaxMovement(int xDistance, int yDistance) {
+    public Speed getSpeed() {
+        return speed;
+    }
+
+    public void computeMovement() {
+        oldCenter = center;
+        oldHitBox = initHitBox(oldCenter);
+
+        if (moveTarget != null) {
+            Log.d(TAG, "##### centerX=" + center.x + " centerY=" + center.y);
+            Log.d(TAG, "##### moveTarget x=" + moveTarget.x + " y=" + moveTarget.y);
+            Log.d(TAG, "##### (moveTarget.y - centerY)=" + (moveTarget.y - center.x));
+            Log.d(TAG, "##### (moveTarget.x - centerX)=" + (moveTarget.x - center.y));
+
+            if (!isTargetCloserThanMaxMovement()) {
+                speed = computeSpeed();
+            }
+        }
+    }
+
+    public void applyHorizontalMovement() {
+        center.x += speed.getX();
+        hitBox = initHitBox(center);
+    }
+
+    public void applyVerticalMovement() {
+        center.y += speed.getY();
+        hitBox = initHitBox(center);
+    }
+
+    private Speed computeSpeed() {
+        Speed speed = new Speed();
+        if (isVerticalMovement()) {
+            speed.setX(0);
+            speed.setY(MOVESPEED);
+        } else if (isHorizontalMovement()) {
+            speed.setX(MOVESPEED);
+            speed.setY(0);
+        } else {
+            int xDistance = moveTarget.x - center.x;
+            int yDistance = moveTarget.y - center.y;
+
+            double slope = yDistance / (double) xDistance;
+            Log.d(TAG, "##### slope=" + slope);
+            speed.setX(MOVESPEED / Math.sqrt(slope * slope + 1));
+            speed.setY(Math.sqrt(MOVESPEED * MOVESPEED - speed.getX() * speed.getX()));
+        }
+
+        if (moveTarget.x < center.x) {
+            speed.invertX();
+        }
+
+        if (moveTarget.y < center.y) {
+            speed.invertY();
+        }
+
+        System.out.println("##### speedX=" + speed.getX() + " speedY=" + speed.getY());
+        return speed;
+    }
+
+    private boolean isVerticalMovement() {
+        return moveTarget.x == center.x;
+    }
+
+    private boolean isHorizontalMovement() {
+        return moveTarget.y == center.y;
+    }
+
+    private boolean isTargetCloserThanMaxMovement() {
+        int xDistance = moveTarget.x - center.x;
+        int yDistance = moveTarget.y - center.y;
         return Math.sqrt((xDistance * xDistance) + (yDistance * yDistance)) < MOVESPEED;
     }
 
-    private Rect initHitBox() {
-        return new Rect(centerX - (OverworldConstants.TILE_WIDTH / 2), centerY - (OverworldConstants.TILE_HEIGHT / 2), centerX + (OverworldConstants.TILE_WIDTH / 2), centerY + (OverworldConstants.TILE_HEIGHT / 2));
+    private Rect initHitBox(Point p) {
+        return new Rect(retrieveLeft(p), retrieveTop(p), retrieveRight(p), retrieveBottom(p));
     }
 
-    public void moveRight() {
-        speedX = MOVESPEED;
+    private int retrieveLeft(Point p) {
+        return p.x - OverworldConstants.TILE_WIDTH / 2;
     }
 
-    public void moveLeft() {
-        speedX = -MOVESPEED;
+    private int retrieveTop(Point p) {
+        return p.y - OverworldConstants.TILE_HEIGHT / 2;
     }
 
-    public void moveUp() {
-        speedY = -MOVESPEED;
+    private int retrieveRight(Point p) {
+        return p.x + OverworldConstants.TILE_WIDTH / 2;
     }
 
-    public void moveDown() {
-        speedY = MOVESPEED;
-    }
-
-    public int getCenterX() {
-        return centerX;
-    }
-
-    public void setCenterX(int centerX) {
-        this.centerX = centerX;
-    }
-
-    public int getCenterY() {
-        return centerY;
-    }
-
-    public void setCenterY(int centerY) {
-        this.centerY = centerY;
-    }
-
-    public void setSpeedX(int speedX) {
-        this.speedX = speedX;
-    }
-
-    public void setSpeedY(int speedY) {
-        this.speedY = speedY;
-    }
-
-    public void collide(OverworldTile tile) {
-        moveStop();
-    }
-
-    public Rect getHitBox() {
-        return hitBox;
-    }
-
-    public void collideLeft(Rect rect) {
-        speedX = 0;
-//        centerX += hitBox.left - rect.right;
-    }
-
-    public void collideRight(Rect rect) {
-        speedX = 0;
-//        centerX -= rect.left - hitBox.right;
-//        centerX -= OverworldConstants.TILE_WIDTH / 2;
-    }
-
-    public void collideUp(Rect rect) {
-        speedY = 0;
-//        centerY += rect.bottom - hitBox.top;
-//        centerY += OverworldConstants.TILE_HEIGHT / 2;
-    }
-
-    public void collideDown(Rect rect) {
-        speedY = 0;
-//        centerY -= hitBox.bottom - rect.top;
-//        centerY -= OverworldConstants.TILE_HEIGHT / 2;
-    }
-
-    public void moveStop() {
-        speedX = 0;
-        speedY = 0;
-    }
-
-//    public void move() {
-//        if (isRightClick(event.x)) {
-//            mainCharacter.moveRight();
-//        } else if (isLeftClick(event.x)) {
-//            mainCharacter.moveLeft();
-//        }
-//
-//        if (isUpClick(event.y)) {
-//            mainCharacter.moveUp();
-//        } else if (isDownClick(event.y)) {
-//            mainCharacter.moveDown();
-//        }
-//    }
-
-    private boolean isRightClick(int x) {
-        System.out.println("##### OverworldCharacter.isRightClick x=" + x + " centerX=" + centerX + " MOVESPEED=" + MOVESPEED + " centerX+MOVESPEED=" + (centerX + MOVESPEED));
-        return x > centerX + MOVESPEED;// + OverworldConstants.TILE_WIDTH / 2;
-    }
-
-    private boolean isLeftClick(int x) {
-        System.out.println("##### OverworldCharacter.isLeftClick x=" + x + " centerX=" + centerX + " MOVESPEED=" + MOVESPEED + " centerX-MOVESPEED=" + (centerX - MOVESPEED));
-        return x < centerX - MOVESPEED;// - OverworldConstants.TILE_WIDTH / 2;
-    }
-
-    private boolean isUpClick(int y) {
-        System.out.println("##### OverworldCharacter.isUpClick y=" + y + " centerY=" + centerY + " MOVESPEED=" + MOVESPEED + " centerY-MOVESPEED=" + (centerY - MOVESPEED));
-        return y < centerY - MOVESPEED;// - OverworldConstants.TILE_HEIGHT / 2;
-    }
-
-    private boolean isDownClick(int y) {
-        System.out.println("##### OverworldCharacter.isDownClick y=" + y + " centerY=" + centerY + " MOVESPEED=" + MOVESPEED + " centerY+MOVESPEED=" + (centerY + MOVESPEED));
-        return y > centerY + MOVESPEED;// + OverworldConstants.TILE_HEIGHT / 2;
+    private int retrieveBottom(Point p) {
+        return p.y + OverworldConstants.TILE_HEIGHT / 2;
     }
 
     public void setMoveTarget(Point moveTarget) {
         this.moveTarget = moveTarget;
+    }
+
+    public int computeCollisionFromRight(Rect obstacle) {
+        if (oldHitBox.right < obstacle.left && // was not colliding
+                hitBox.right >= obstacle.left) {
+            return hitBox.right - obstacle.left;
+        }
+        return 0;
+    }
+
+    public int computeCollisionFromLeft(Rect obstacle) {
+        if (oldHitBox.left > obstacle.right && // was not colliding
+                hitBox.left <= obstacle.right) {
+            return obstacle.right - hitBox.left;
+        }
+        return 0;
+    }
+
+    public int computeCollisionFromBottom(Rect obstacle) {
+        if (oldHitBox.bottom < obstacle.top && // was not colliding
+                hitBox.bottom >= obstacle.top) {
+            return hitBox.bottom - obstacle.top;
+        }
+        return 0;
+    }
+
+    public int computeCollisionFromTop(Rect obstacle) {
+        if (oldHitBox.top > obstacle.bottom && // was not colliding
+                hitBox.top <= obstacle.bottom) {
+            return obstacle.bottom - hitBox.top;
+        }
+        return 0;
+    }
+
+    public void bumpFromLeftCollision(Rect obstacle) {
+        int distanceIntoTheWall = obstacle.right - hitBox.left;
+        Log.d(TAG, "##### center.x=" + center.x + " center.y=" + center.y + " distanceIntoTheWall=" + distanceIntoTheWall);
+        center.x += distanceIntoTheWall;
+    }
+
+    public void bumpFromRightCollision(Rect obstacle) {
+        int distanceIntoTheWall = hitBox.right - obstacle.left;
+        Log.d(TAG, "##### center.x=" + center.x + " center.y=" + center.y + " distanceIntoTheWall=" + distanceIntoTheWall);
+        center.x -= distanceIntoTheWall;
+    }
+
+    public void bumpFromTopCollision(Rect obstacle) {
+        int distanceIntoTheWall = obstacle.bottom - hitBox.top;
+        Log.d(TAG, "##### center.x=" + center.x + " center.y=" + center.y + " distanceIntoTheWall=" + distanceIntoTheWall);
+        center.y += distanceIntoTheWall;
+    }
+
+    public void bumpFromBottomCollision(Rect obstacle) {
+        int distanceIntoTheWall = hitBox.bottom - obstacle.top;
+        Log.d(TAG, "##### center.x=" + center.x + " center.y=" + center.y + " distanceIntoTheWall=" + distanceIntoTheWall);
+        center.x -= distanceIntoTheWall;
+    }
+
+    public boolean hasCollision(Rect obstacle) {
+        return hitBox.intersect(obstacle);
     }
 }

@@ -42,11 +42,11 @@ public class OverworldEnemy {
 
         if (centerX < -95 || centerX > 810) {
             movementSpeed = 0;
-        } else if (Math.abs(mainCharacter.getCenterX() - centerX) < 5) {
+        } else if (Math.abs(mainCharacter.getCenter().x - centerX) < 5) {
             movementSpeed = 0;
         } else {
 
-            if (mainCharacter.getCenterX() >= centerX) {
+            if (mainCharacter.getCenter().x >= centerX) {
                 movementSpeed = 1;
             } else {
                 movementSpeed = -1;
