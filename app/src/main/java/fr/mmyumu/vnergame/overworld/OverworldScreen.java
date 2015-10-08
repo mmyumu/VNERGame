@@ -3,6 +3,7 @@ package fr.mmyumu.vnergame.overworld;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Point;
+import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,6 +19,8 @@ import fr.mmyumu.vnergame.SampleGame;
 import fr.mmyumu.vnergame.mainmenu.MainMenuScreen;
 
 public class OverworldScreen extends Screen {
+
+    private static final String TAG = "OverworldScreen";
 
     // Variable Setup
     private OverworldCharacter mainCharacter;
@@ -163,11 +166,15 @@ public class OverworldScreen extends Screen {
     }
 
     private void checkHorizontalCollision() {
-        mainCharacter.getCenter().x += computeHorizontalCollision();
+        int distance = computeHorizontalCollision();
+        Log.d(TAG, "##### distance=" + distance);
+        mainCharacter.getCenter().x += distance;
     }
 
     private void checkVerticalCollision() {
-        mainCharacter.getCenter().y += computeVerticalCollision();
+        int distance = computeVerticalCollision();
+        Log.d(TAG, "##### distance=" + distance);
+        mainCharacter.getCenter().y += distance;
     }
 
     private int computeHorizontalCollision() {
@@ -192,10 +199,10 @@ public class OverworldScreen extends Screen {
     private int computeLeftCollision() {
         int maxCollisionDistance = 0;
         for(OverworldTile tile : tiles) {
-            if(tile.getType() == OverworldTile.Type.WALL) {
+            if(tile.getType() == OverworldTile.Type.WALL && tile.getRect().intersect(mainCharacter.getHitBox())) {
                 int collisionDistance = mainCharacter.computeCollisionFromLeft(tile.getRect());
                 if(collisionDistance > maxCollisionDistance) {
-                    maxCollisionDistance = collisionDistance;
+                    maxCollisionDistance = collisionDistance + 1;
                 }
             }
         }
@@ -205,10 +212,10 @@ public class OverworldScreen extends Screen {
     private int computeRightCollision() {
         int maxCollisionDistance = 0;
         for(OverworldTile tile : tiles) {
-            if(tile.getType() == OverworldTile.Type.WALL) {
+            if(tile.getType() == OverworldTile.Type.WALL && tile.getRect().intersect(mainCharacter.getHitBox())) {
                 int collisionDistance = mainCharacter.computeCollisionFromRight(tile.getRect());
                 if(collisionDistance > maxCollisionDistance) {
-                    maxCollisionDistance = collisionDistance;
+                    maxCollisionDistance = collisionDistance + 1;
                 }
             }
         }
@@ -218,10 +225,10 @@ public class OverworldScreen extends Screen {
     private int computeTopCollision() {
         int maxCollisionDistance = 0;
         for(OverworldTile tile : tiles) {
-            if(tile.getType() == OverworldTile.Type.WALL) {
+            if(tile.getType() == OverworldTile.Type.WALL && tile.getRect().intersect(mainCharacter.getHitBox())) {
                 int collisionDistance = mainCharacter.computeCollisionFromTop(tile.getRect());
                 if(collisionDistance > maxCollisionDistance) {
-                    maxCollisionDistance = collisionDistance;
+                    maxCollisionDistance = collisionDistance + 1;
                 }
             }
         }
@@ -231,10 +238,10 @@ public class OverworldScreen extends Screen {
     private int computeBottomCollision() {
         int maxCollisionDistance = 0;
         for(OverworldTile tile : tiles) {
-            if(tile.getType() == OverworldTile.Type.WALL) {
+            if(tile.getType() == OverworldTile.Type.WALL && tile.getRect().intersect(mainCharacter.getHitBox())) {
                 int collisionDistance = mainCharacter.computeCollisionFromBottom(tile.getRect());
                 if(collisionDistance > maxCollisionDistance) {
-                    maxCollisionDistance = collisionDistance;
+                    maxCollisionDistance = collisionDistance + 1;
                 }
             }
         }

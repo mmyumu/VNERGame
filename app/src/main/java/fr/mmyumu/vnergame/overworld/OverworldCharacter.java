@@ -34,9 +34,17 @@ public class OverworldCharacter {
         return speed;
     }
 
+    public Rect getHitBox() {
+        return hitBox;
+    }
+
+    public void setHitBox(Rect hitBox) {
+        this.hitBox = hitBox;
+    }
+
     public void computeMovement() {
         oldCenter = center;
-        oldHitBox = initHitBox(oldCenter);
+        speed = new Speed(0, 0);
 
         if (moveTarget != null) {
             Log.d(TAG, "##### centerX=" + center.x + " centerY=" + center.y);
@@ -51,11 +59,13 @@ public class OverworldCharacter {
     }
 
     public void applyHorizontalMovement() {
+        oldHitBox = initHitBox(oldCenter);
         center.x += speed.getX();
         hitBox = initHitBox(center);
     }
 
     public void applyVerticalMovement() {
+        oldHitBox = initHitBox(oldCenter);
         center.y += speed.getY();
         hitBox = initHitBox(center);
     }

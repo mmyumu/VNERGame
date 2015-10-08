@@ -12,6 +12,11 @@ public class Speed {
         super();
     }
 
+    public Speed(double x, double y) {
+        this.x = x;
+        this.y = y;
+    }
+
     public double getX() {
         return x;
     }
