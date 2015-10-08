@@ -3,6 +3,7 @@ package fr.mmyumu.vnergame.overworld;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Point;
+import android.graphics.Rect;
 import android.util.Log;
 
 import java.util.ArrayList;
@@ -178,9 +179,9 @@ public class OverworldScreen extends Screen {
     }
 
     private int computeHorizontalCollision() {
-        if(mainCharacter.getSpeed().getX() < 0) {
+        if (mainCharacter.getSpeed().getX() < 0) {
             return computeLeftCollision();
-        } else if(mainCharacter.getSpeed().getX() > 0) {
+        } else if (mainCharacter.getSpeed().getX() > 0) {
             return -computeRightCollision();
         }
 
@@ -188,9 +189,9 @@ public class OverworldScreen extends Screen {
     }
 
     private int computeVerticalCollision() {
-        if(mainCharacter.getSpeed().getY() < 0) {
+        if (mainCharacter.getSpeed().getY() < 0) {
             return computeTopCollision();
-        } else if(mainCharacter.getSpeed().getX() > 0) {
+        } else if (mainCharacter.getSpeed().getX() > 0) {
             return -computeBottomCollision();
         }
         return 0;
@@ -198,10 +199,11 @@ public class OverworldScreen extends Screen {
 
     private int computeLeftCollision() {
         int maxCollisionDistance = 0;
-        for(OverworldTile tile : tiles) {
-            if(tile.getType() == OverworldTile.Type.WALL && tile.getRect().intersect(mainCharacter.getHitBox())) {
+        for (OverworldTile tile : tiles) {
+            if (tile.getType() == OverworldTile.Type.WALL && Rect.intersects(tile.getRect(), mainCharacter.getLeftHitBox())) {
+                Log.d(TAG, "##### LEFT COLLISION with tile =" + tile.getRect().toShortString());
                 int collisionDistance = mainCharacter.computeCollisionFromLeft(tile.getRect());
-                if(collisionDistance > maxCollisionDistance) {
+                if (collisionDistance > maxCollisionDistance) {
                     maxCollisionDistance = collisionDistance + 1;
                 }
             }
@@ -211,10 +213,11 @@ public class OverworldScreen extends Screen {
 
     private int computeRightCollision() {
         int maxCollisionDistance = 0;
-        for(OverworldTile tile : tiles) {
-            if(tile.getType() == OverworldTile.Type.WALL && tile.getRect().intersect(mainCharacter.getHitBox())) {
+        for (OverworldTile tile : tiles) {
+            if (tile.getType() == OverworldTile.Type.WALL && Rect.intersects(tile.getRect(), mainCharacter.getRightHitBox())) {
+                Log.d(TAG, "##### RIGHT COLLISION with tile =" + tile.getRect().toShortString());
                 int collisionDistance = mainCharacter.computeCollisionFromRight(tile.getRect());
-                if(collisionDistance > maxCollisionDistance) {
+                if (collisionDistance > maxCollisionDistance) {
                     maxCollisionDistance = collisionDistance + 1;
                 }
             }
@@ -224,10 +227,11 @@ public class OverworldScreen extends Screen {
 
     private int computeTopCollision() {
         int maxCollisionDistance = 0;
-        for(OverworldTile tile : tiles) {
-            if(tile.getType() == OverworldTile.Type.WALL && tile.getRect().intersect(mainCharacter.getHitBox())) {
+        for (OverworldTile tile : tiles) {
+            if (tile.getType() == OverworldTile.Type.WALL && Rect.intersects(tile.getRect(), mainCharacter.getTopHitBox())) {
+                Log.d(TAG, "##### TOP COLLISION with tile =" + tile.getRect().toShortString());
                 int collisionDistance = mainCharacter.computeCollisionFromTop(tile.getRect());
-                if(collisionDistance > maxCollisionDistance) {
+                if (collisionDistance > maxCollisionDistance) {
                     maxCollisionDistance = collisionDistance + 1;
                 }
             }
@@ -237,10 +241,11 @@ public class OverworldScreen extends Screen {
 
     private int computeBottomCollision() {
         int maxCollisionDistance = 0;
-        for(OverworldTile tile : tiles) {
-            if(tile.getType() == OverworldTile.Type.WALL && tile.getRect().intersect(mainCharacter.getHitBox())) {
+        for (OverworldTile tile : tiles) {
+            if (tile.getType() == OverworldTile.Type.WALL && Rect.intersects(tile.getRect(), mainCharacter.getBottomHitBox())) {
+                Log.d(TAG, "##### BOTTOM COLLISION with tile =" + tile.getRect().toShortString());
                 int collisionDistance = mainCharacter.computeCollisionFromBottom(tile.getRect());
-                if(collisionDistance > maxCollisionDistance) {
+                if (collisionDistance > maxCollisionDistance) {
                     maxCollisionDistance = collisionDistance + 1;
                 }
             }

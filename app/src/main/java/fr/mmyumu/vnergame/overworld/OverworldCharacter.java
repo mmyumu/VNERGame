@@ -12,15 +12,19 @@ public class OverworldCharacter {
     private Point oldCenter;
     private Point center;
     private Point moveTarget;
-    private Rect oldHitBox;
-    private Rect hitBox;
+    //    private Rect oldHitBox;
+//    private Rect hitBox;
+    private Rect leftHitBox;
+    private Rect rightHitBox;
+    private Rect topHitBox;
+    private Rect bottomHitBox;
     private Speed speed;
 
     public OverworldCharacter(Point center) {
         this.center = center;
 
         this.moveTarget = null;
-        this.hitBox = initHitBox(center);
+        initHitBoxes(center);
     }
 
     //    private Background bg1 = OverworldScreen.getBg1();
@@ -34,12 +38,20 @@ public class OverworldCharacter {
         return speed;
     }
 
-    public Rect getHitBox() {
-        return hitBox;
+    public Rect getLeftHitBox() {
+        return leftHitBox;
     }
 
-    public void setHitBox(Rect hitBox) {
-        this.hitBox = hitBox;
+    public Rect getRightHitBox() {
+        return rightHitBox;
+    }
+
+    public Rect getTopHitBox() {
+        return topHitBox;
+    }
+
+    public Rect getBottomHitBox() {
+        return bottomHitBox;
     }
 
     public void computeMovement() {
@@ -59,15 +71,15 @@ public class OverworldCharacter {
     }
 
     public void applyHorizontalMovement() {
-        oldHitBox = initHitBox(oldCenter);
+//        oldHitBox = initHitBox(oldCenter);
         center.x += speed.getX();
-        hitBox = initHitBox(center);
+        initHitBoxes(center);
     }
 
     public void applyVerticalMovement() {
-        oldHitBox = initHitBox(oldCenter);
+//        oldHitBox = initHitBox(oldCenter);
         center.y += speed.getY();
-        hitBox = initHitBox(center);
+        initHitBoxes(center);
     }
 
     private Speed computeSpeed() {
@@ -114,8 +126,11 @@ public class OverworldCharacter {
         return Math.sqrt((xDistance * xDistance) + (yDistance * yDistance)) < MOVESPEED;
     }
 
-    private Rect initHitBox(Point p) {
-        return new Rect(retrieveLeft(p), retrieveTop(p), retrieveRight(p), retrieveBottom(p));
+    private void initHitBoxes(Point p) {
+        leftHitBox = new Rect(retrieveLeft(p), retrieveTop(p) + MOVESPEED, retrieveLeft(p), retrieveBottom(p) - MOVESPEED);
+        rightHitBox = new Rect(retrieveRight(p), retrieveTop(p) + MOVESPEED, retrieveRight(p), retrieveBottom(p) - MOVESPEED);
+        topHitBox = new Rect(retrieveLeft(p) + MOVESPEED, retrieveTop(p), retrieveRight(p) - MOVESPEED, retrieveTop(p));
+        bottomHitBox = new Rect(retrieveLeft(p) + MOVESPEED, retrieveBottom(p), retrieveRight(p) - MOVESPEED, retrieveBottom(p));
     }
 
     private int retrieveLeft(Point p) {
@@ -139,62 +154,46 @@ public class OverworldCharacter {
     }
 
     public int computeCollisionFromRight(Rect obstacle) {
-        if (oldHitBox.right < obstacle.left && // was not colliding
-                hitBox.right >= obstacle.left) {
-            return hitBox.right - obstacle.left;
-        }
-        return 0;
+        return rightHitBox.right - obstacle.left;
     }
 
     public int computeCollisionFromLeft(Rect obstacle) {
-        if (oldHitBox.left > obstacle.right && // was not colliding
-                hitBox.left <= obstacle.right) {
-            return obstacle.right - hitBox.left;
-        }
-        return 0;
+        return obstacle.right - leftHitBox.left;
     }
 
     public int computeCollisionFromBottom(Rect obstacle) {
-        if (oldHitBox.bottom < obstacle.top && // was not colliding
-                hitBox.bottom >= obstacle.top) {
-            return hitBox.bottom - obstacle.top;
-        }
-        return 0;
+        return bottomHitBox.bottom - obstacle.top;
     }
 
     public int computeCollisionFromTop(Rect obstacle) {
-        if (oldHitBox.top > obstacle.bottom && // was not colliding
-                hitBox.top <= obstacle.bottom) {
-            return obstacle.bottom - hitBox.top;
-        }
-        return 0;
+        return obstacle.bottom - topHitBox.top;
     }
 
-    public void bumpFromLeftCollision(Rect obstacle) {
-        int distanceIntoTheWall = obstacle.right - hitBox.left;
-        Log.d(TAG, "##### center.x=" + center.x + " center.y=" + center.y + " distanceIntoTheWall=" + distanceIntoTheWall);
-        center.x += distanceIntoTheWall;
-    }
-
-    public void bumpFromRightCollision(Rect obstacle) {
-        int distanceIntoTheWall = hitBox.right - obstacle.left;
-        Log.d(TAG, "##### center.x=" + center.x + " center.y=" + center.y + " distanceIntoTheWall=" + distanceIntoTheWall);
-        center.x -= distanceIntoTheWall;
-    }
-
-    public void bumpFromTopCollision(Rect obstacle) {
-        int distanceIntoTheWall = obstacle.bottom - hitBox.top;
-        Log.d(TAG, "##### center.x=" + center.x + " center.y=" + center.y + " distanceIntoTheWall=" + distanceIntoTheWall);
-        center.y += distanceIntoTheWall;
-    }
-
-    public void bumpFromBottomCollision(Rect obstacle) {
-        int distanceIntoTheWall = hitBox.bottom - obstacle.top;
-        Log.d(TAG, "##### center.x=" + center.x + " center.y=" + center.y + " distanceIntoTheWall=" + distanceIntoTheWall);
-        center.x -= distanceIntoTheWall;
-    }
-
-    public boolean hasCollision(Rect obstacle) {
-        return hitBox.intersect(obstacle);
-    }
+//    public void bumpFromLeftCollision(Rect obstacle) {
+//        int distanceIntoTheWall = obstacle.right - hitBox.left;
+//        Log.d(TAG, "##### center.x=" + center.x + " center.y=" + center.y + " distanceIntoTheWall=" + distanceIntoTheWall);
+//        center.x += distanceIntoTheWall;
+//    }
+//
+//    public void bumpFromRightCollision(Rect obstacle) {
+//        int distanceIntoTheWall = hitBox.right - obstacle.left;
+//        Log.d(TAG, "##### center.x=" + center.x + " center.y=" + center.y + " distanceIntoTheWall=" + distanceIntoTheWall);
+//        center.x -= distanceIntoTheWall;
+//    }
+//
+//    public void bumpFromTopCollision(Rect obstacle) {
+//        int distanceIntoTheWall = obstacle.bottom - hitBox.top;
+//        Log.d(TAG, "##### center.x=" + center.x + " center.y=" + center.y + " distanceIntoTheWall=" + distanceIntoTheWall);
+//        center.y += distanceIntoTheWall;
+//    }
+//
+//    public void bumpFromBottomCollision(Rect obstacle) {
+//        int distanceIntoTheWall = hitBox.bottom - obstacle.top;
+//        Log.d(TAG, "##### center.x=" + center.x + " center.y=" + center.y + " distanceIntoTheWall=" + distanceIntoTheWall);
+//        center.x -= distanceIntoTheWall;
+//    }
+//
+//    public boolean hasCollision(Rect obstacle) {
+//        return hitBox.intersect(obstacle);
+//    }
 }
