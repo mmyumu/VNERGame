@@ -191,7 +191,7 @@ public class OverworldScreen extends Screen {
     private int computeVerticalCollision() {
         if (mainCharacter.getSpeed().getY() < 0) {
             return computeTopCollision();
-        } else if (mainCharacter.getSpeed().getX() > 0) {
+        } else if (mainCharacter.getSpeed().getY() > 0) {
             return -computeBottomCollision();
         }
         return 0;

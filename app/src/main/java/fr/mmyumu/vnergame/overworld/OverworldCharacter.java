@@ -127,10 +127,10 @@ public class OverworldCharacter {
     }
 
     private void initHitBoxes(Point p) {
-        leftHitBox = new Rect(retrieveLeft(p), retrieveTop(p) + MOVESPEED, retrieveLeft(p), retrieveBottom(p) - MOVESPEED);
-        rightHitBox = new Rect(retrieveRight(p), retrieveTop(p) + MOVESPEED, retrieveRight(p), retrieveBottom(p) - MOVESPEED);
-        topHitBox = new Rect(retrieveLeft(p) + MOVESPEED, retrieveTop(p), retrieveRight(p) - MOVESPEED, retrieveTop(p));
-        bottomHitBox = new Rect(retrieveLeft(p) + MOVESPEED, retrieveBottom(p), retrieveRight(p) - MOVESPEED, retrieveBottom(p));
+        leftHitBox = new Rect(retrieveLeft(p), retrieveTop(p), retrieveLeft(p), retrieveBottom(p));
+        rightHitBox = new Rect(retrieveRight(p), retrieveTop(p), retrieveRight(p), retrieveBottom(p));
+        topHitBox = new Rect(retrieveLeft(p), retrieveTop(p), retrieveRight(p), retrieveTop(p));
+        bottomHitBox = new Rect(retrieveLeft(p), retrieveBottom(p), retrieveRight(p), retrieveBottom(p));
     }
 
     private int retrieveLeft(Point p) {
