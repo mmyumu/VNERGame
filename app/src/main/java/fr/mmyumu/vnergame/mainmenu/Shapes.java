@@ -7,5 +7,6 @@ import fr.mmyumu.androidgameframework.Rect;
  * Created by mmyumu on 21/09/2015.
  */
 public interface Shapes {
-    Rect start = new Rect(1133, 1457, 305, 133);
+    //    Rect start = new Rect(1133, 1457, 305, 133);
+    Rect start = new Rect(500, 500, 200, 100);
 }

@@ -8,7 +8,7 @@ public abstract class Screen {
     }
 
     protected boolean inBounds(Input.TouchEvent event, Rect rect) {
-        return inBounds(event, rect.getX(), rect.getY(), rect.getWidth(), rect.getHeight());
+        return inBounds(event, rect.getTopLeft().x, rect.getTopLeft().y, rect.getWidth(), rect.getHeight());
     }
 
     protected boolean inBounds(Input.TouchEvent event, int x, int y, int width, int height) {
@@ -18,7 +18,7 @@ public abstract class Screen {
 
     public abstract void update(float deltaTime);
 
-    public abstract void paint(float deltaTime);
+    public abstract void paint(float deltaTime, float[] mvpMatrix);
 
     public abstract void pause();
 

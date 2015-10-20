@@ -97,7 +97,7 @@ public class AndroidGraphics implements Graphics {
 
     @Override
     public void drawRect(fr.mmyumu.androidgameframework.Rect rect, int color) {
-        drawRect(rect.getX(), rect.getY(), rect.getWidth(), rect.getHeight(), color);
+        drawRect(rect.getTopLeft().x, rect.getTopLeft().y, rect.getWidth(), rect.getHeight(), color);
     }
 
     @Override
@@ -109,8 +109,6 @@ public class AndroidGraphics implements Graphics {
     @Override
     public void drawString(String text, int x, int y, Paint paint){
         canvas.drawText(text, x, y, paint);
-
-        
     }
     
 

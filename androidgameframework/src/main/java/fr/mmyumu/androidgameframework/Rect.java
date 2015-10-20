@@ -1,36 +1,53 @@
 package fr.mmyumu.androidgameframework;
 
+import android.graphics.Point;
+
 /**
  * Rect that can be drew or used for in bound touch event
  * Created by mmyumu on 21/09/2015.
  */
 public class Rect {
-    private int x;
-    private int y;
-    private int width;
-    private int height;
+    private Point topLeft;
+    private Point bottomLeft;
+    private Point bottomRight;
+    private Point topRight;
+
+    public Rect(Point topLeft, Point bottomLeft, Point bottomRight, Point topRight) {
+        this.topLeft = topLeft;
+        this.bottomLeft = bottomLeft;
+        this.bottomRight = bottomRight;
+        this.topRight = topRight;
+    }
 
     public Rect(int x, int y, int width, int height) {
-        super();
-        this.x = x;
-        this.y = y;
-        this.width = width;
-        this.height = height;
+        topLeft = new Point(x, y);
+        bottomLeft = new Point(x, y + height);
+        bottomRight = new Point(x + width, y + height);
+        topRight = new Point(x + width, y);
     }
 
-    public int getX() {
-        return x;
+
+    public Point getTopLeft() {
+        return topLeft;
     }
 
-    public int getY() {
-        return y;
+    public Point getBottomLeft() {
+        return bottomLeft;
+    }
+
+    public Point getBottomRight() {
+        return bottomRight;
+    }
+
+    public Point getTopRight() {
+        return topRight;
     }
 
     public int getWidth() {
-        return width;
+        return Math.abs(topLeft.x - topRight.x);
     }
 
     public int getHeight() {
-        return height;
+        return Math.abs(bottomLeft.y - topLeft.y);
     }
 }

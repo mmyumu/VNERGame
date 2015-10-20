@@ -128,6 +128,36 @@ public class OverworldScreen extends Screen {
         }
     }
 
+    @Override
+    public void paint(float deltaTime, float[] mvpMatrix) {
+        Graphics g = game.getGraphics();
+
+//        g.drawImage(Assets.background, bg1.getBgX(), bg1.getBgY());
+//        g.drawImage(Assets.background, bg2.getBgX(), bg2.getBgY());
+        paintTiles(g);
+
+        // First draw the game elements.
+        g.drawImage(character, mainCharacter.getCenter().x - (OverworldConstants.TILE_WIDTH / 2), mainCharacter.getCenter().y - (OverworldConstants.TILE_HEIGHT / 2));
+
+        // Example:
+        // g.drawImage(Assets.background, 0, 0);
+        // g.drawImage(Assets.character, characterX, characterY);
+
+        // Secondly, draw the UI above the game elements.
+        if (state == GameState.Ready) {
+            drawReadyUI();
+        }
+        if (state == GameState.Running) {
+            drawRunningUI();
+        }
+        if (state == GameState.Paused) {
+            drawPausedUI();
+        }
+        if (state == GameState.GameOver) {
+            drawGameOverUI();
+        }
+    }
+
     private void updateReady(List touchEvents) {
 
         // This example starts with a "Ready" screen.
@@ -141,7 +171,7 @@ public class OverworldScreen extends Screen {
     }
 
     private void updateRunning(List<TouchEvent> touchEvents, float deltaTime) {
-        System.out.println("##### OverworldScreen.updateRunning deltaTime=" + deltaTime);
+        Log.d(TAG, "##### OverworldScreen.updateRunning deltaTime=" + deltaTime);
         // This is identical to the update() method from our Unit 2/3 game.
 
         // 1. All touch input is handled here:
@@ -290,36 +320,6 @@ public class OverworldScreen extends Screen {
     private void updateTiles() {
         for (OverworldTile tile : tiles) {
             tile.update();
-        }
-    }
-
-    @Override
-    public void paint(float deltaTime) {
-        Graphics g = game.getGraphics();
-
-//        g.drawImage(Assets.background, bg1.getBgX(), bg1.getBgY());
-//        g.drawImage(Assets.background, bg2.getBgX(), bg2.getBgY());
-        paintTiles(g);
-
-        // First draw the game elements.
-        g.drawImage(character, mainCharacter.getCenter().x - (OverworldConstants.TILE_WIDTH / 2), mainCharacter.getCenter().y - (OverworldConstants.TILE_HEIGHT / 2));
-
-        // Example:
-        // g.drawImage(Assets.background, 0, 0);
-        // g.drawImage(Assets.character, characterX, characterY);
-
-        // Secondly, draw the UI above the game elements.
-        if (state == GameState.Ready) {
-            drawReadyUI();
-        }
-        if (state == GameState.Running) {
-            drawRunningUI();
-        }
-        if (state == GameState.Paused) {
-            drawPausedUI();
-        }
-        if (state == GameState.GameOver) {
-            drawGameOverUI();
         }
     }
 
